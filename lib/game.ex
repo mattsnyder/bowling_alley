@@ -14,6 +14,11 @@ defmodule BowlingAlley.Game do
     GenServer.call(@name, {:add_bowler, bowler_name})
   end
 
+  def add_roll(bowler_name, pins) do
+    IO.puts "#{__MODULE__}#add_roll"
+    GenServer.call(@name, {:add_roll, bowler_name, pins})
+  end
+  
   def bowlers do
     GenServer.call(@name, {:bowlers})
   end
@@ -29,12 +34,23 @@ defmodule BowlingAlley.Game do
   #   {:noreply, []}
   # end
 
-  def handle_call({:add_bowler, name}, _from, state) do
-    {:reply, name, Map.put(state, name, [])}
+  def handle_call({:add_bowler, bowler_name}, _from, state) do
+    import Supervisor.Spec, warn: false
+    opts = [strategy: :one_for_one, name: BowlingAlley.Supervisor]
+    {:ok, pid} = GenServer.start_link(BowlingAlley.Scorer, bowler_name)
+    
+    {:reply, bowler_name, Map.put(state, bowler_name, pid)}
+  end
+
+  def handle_call({:add_roll, bowler_name, pins}, _from, state) do
+    {:ok, pid} = Map.fetch(state, bowler_name)
+    rolls = GenServer.call(pid, {:add_roll, pins})
+    
+    {:reply, rolls, state}
   end
 
   def handle_call({:bowlers}, _from, state) do
-    {:reply, Map.keys(state), state}
+    {:reply, state, state}
   end
   
 end
