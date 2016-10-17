@@ -12,16 +12,19 @@ defmodule BowlingAlley.Scorer do
     {:ok, []}
   end
 
+  def add_roll(pins) do
+    GenServer.call(self(), {:add_roll, pins})
+  end
+  
   def handle_call({:add_roll, pins}, _from, state) do
-    IO.inspect(state ++ [pins])
     {:reply, state ++ [pins], state ++ [pins]}
   end
 
   def handle_call({:score}, _from, state) do
-    {:reply, score(state), state}
+    {:reply, calculate(state), state}
   end
 
-  def score(rolls) do
+  defp calculate(rolls) do
     Enum.map(rolls, &fill_in_strikes(&1))
     |> List.flatten
     |> fill_empty_frames

@@ -50,9 +50,9 @@ defmodule BowlingAlley.Game do
 
   def handle_call({:bowler_score, bowler_name}, _from, state) do
     {:ok, pid} = Map.fetch(state, bowler_name)
-    score = GenServer.call(pid, {:score})
+    rolls = GenServer.call(pid, {:score})
     
-    {:reply, score, state}
+    {:reply, rolls, state}
   end
 
   def handle_call({:bowlers}, _from, state) do
