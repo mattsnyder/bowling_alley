@@ -7,18 +7,41 @@ defmodule BowlingAlley.Game do
     GenServer.start_link(__MODULE__, :ok, name: @name)
   end
 
+  @doc """
+  iex> BowlingAlley.Game.add_bowler('Snyder')
+  'Snyder'
+  """
   def add_bowler(bowler_name) do
     GenServer.call(@name, {:add_bowler, bowler_name})
   end
 
+  @doc """
+  iex> BowlingAlley.Game.add_roll('Snyder', 5)
+  [5]
+  iex> BowlingAlley.Game.add_roll('Snyder',3)
+  [5,3]
+  """
   def add_roll(bowler_name, pins) do
     GenServer.call(@name, {:add_roll, bowler_name, pins})
   end
 
+  @doc """
+  iex> BowlingAlley.Game.add_bowler('Snyder')
+  iex> BowlingAlley.Game.add_roll('Snyder', 5)
+  iex> BowlingAlley.Game.add_roll('Snyder', 2)
+  iex> BowlingAlley.Game.bowler_score('Snyder')
+  8
+  """
   def bowler_score(bowler_name) do
     GenServer.call(@name, {:bowler_score, bowler_name})
   end    
-  
+
+  @doc """
+  iex> BowlingAlley.Game.add_bowler('Snyder')
+  iex> BowlingAlley.Game.add_bowler('Sloan')
+  iex> BowlingAlley.Game.bowlers
+  ['Snyder','Sloan']
+  """
   def bowlers do
     GenServer.call(@name, {:bowlers})
   end
